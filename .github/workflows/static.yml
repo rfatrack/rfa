@@ -1,0 +1,845 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>L10 - L10 — Analytics Marketing e Performance</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- Google Fonts: Inter -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #0f172a; /* bg-slate-900 */
+        }
+        ::-webkit-scrollbar { width: 8px; height: 8px; }
+        ::-webkit-scrollbar-track { background: #1e293b; }
+        ::-webkit-scrollbar-thumb { background: #475569; border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: #64748b; }
+        
+        .dashboard-card {
+            background-color: #1e293b; /* bg-slate-800 */
+            border: 1px solid #334155; /* border-slate-700 */
+            border-radius: 0.75rem; /* rounded-xl */
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            padding: 1.5rem; /* p-6 */
+            transition: all 0.2s ease-in-out;
+        }
+        .kpi-card {
+            background-color: #1e293b; /* bg-slate-800 */
+            border: 1px solid #334155; /* border-slate-700 */
+            border-radius: 0.75rem; /* rounded-xl */
+            padding: 1rem 1.5rem; /* p-4 p-6 */
+            transition: all 0.2s ease-in-out;
+        }
+        .kpi-card:hover {
+            transform: scale(1.05);
+            box-shadow: 0 8px 16px rgba(0,0,0,0.2);
+            border-color: #475569;
+        }
+        
+        Chart.defaults.color = '#94a3b8';
+        Chart.defaults.borderColor = '#334155';
+        Chart.defaults.plugins.tooltip.backgroundColor = '#1e293b';
+        Chart.defaults.plugins.tooltip.borderColor = '#334155';
+        Chart.defaults.plugins.tooltip.borderWidth = 1;
+        Chart.defaults.plugins.tooltip.titleFont = { weight: 'bold', size: 14 };
+        Chart.defaults.plugins.tooltip.bodyFont = { size: 12 };
+        Chart.defaults.plugins.tooltip.padding = 10;
+        Chart.defaults.plugins.tooltip.cornerRadius = 4;
+        Chart.defaults.plugins.tooltip.displayColors = true;
+
+        .filter-btn.active {
+            background-color: #0ea5e9; /* bg-sky-500 */
+            color: #ffffff; /* text-white */
+            font-weight: 600;
+        }
+        .filter-btn {
+            background-color: #334155; /* bg-slate-700 */
+            color: #cbd5e1; /* text-slate-300 */
+            transition: background-color 0.2s;
+        }
+        .filter-btn:hover {
+            background-color: #475569; /* bg-slate-600 */
+        }
+        
+        .analysis-table-paid, .analysis-table-organic {
+            transition: opacity 0.3s, max-height 0.3s;
+            opacity: 1;
+            max-height: 1000px;
+            overflow: hidden;
+        }
+        .analysis-table-paid.hidden, .analysis-table-organic.hidden {
+            opacity: 0;
+            max-height: 0;
+            padding: 0;
+            margin: 0;
+            border: none;
+        }
+        
+        #ad-table-body tr {
+            transition: background-color 0.2s ease-in-out;
+        }
+        #ad-table-body tr:hover {
+            background-color: #334155; /* bg-slate-700 */
+        }
+        #paid-analysis-body tr, #organic-analysis-body tr {
+            transition: background-color 0.2s ease-in-out;
+        }
+        #paid-analysis-body tr:hover, #organic-analysis-body tr:hover {
+            background-color: #334155; /* bg-slate-700 */
+        }
+    </style>
+</head>
+<body class="text-slate-200">
+
+    <div class="flex flex-col min-h-screen">
+        <!-- Header -->
+        <header class="bg-slate-800 border-b border-slate-700 shadow-md sticky top-0 z-10">
+            <div class="max-w-screen-2xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="flex flex-col md:flex-row justify-between items-center py-3">
+                    <h1 class="text-xl font-semibold text-white mb-3 md:mb-0 text-center md:text-left">L10 - L10 — Analytics Marketing e Performance</h1>
+                    <div class="flex flex-col sm:flex-row items-center gap-4">
+                        <!-- Filtros de Data -->
+                        <div class="flex items-center space-x-2">
+                            <span class="text-sm text-slate-400 hidden sm:block">Período:</span>
+                            <div id="date-filter-container" class="flex space-x-2">
+                                <button class="filter-btn text-sm px-3 py-1.5 rounded-md active" data-filter="all">Período Inteiro</button>
+                                <button class="filter-btn text-sm px-3 py-1.5 rounded-md" data-filter="22">Dia 22</button>
+                                <button class="filter-btn text-sm px-3 py-1.5 rounded-md" data-filter="23">Dia 23</button>
+                            </div>
+                        </div>
+                         <!-- Filtros de Tipo -->
+                        <div class="flex items-center space-x-2">
+                            <span class="text-sm text-slate-400 hidden sm:block">Tipo:</span>
+                            <div id="type-filter-container" class="flex space-x-2">
+                                <button class="filter-btn text-sm px-3 py-1.5 rounded-md active" data-filter="all">Todos</button>
+                                <button class="filter-btn text-sm px-3 py-1.5 rounded-md" data-filter="paid">Pago</button>
+                                <button class="filter-btn text-sm px-3 py-1.5 rounded-md" data-filter="organic">Orgânico</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <!-- Main Content -->
+        <main class="flex-grow p-4 md:p-6 lg:p-8 max-w-screen-2xl mx-auto w-full">
+            
+            <!-- 1. Visão Geral (KPIs) - Linha 1 -->
+            <section id="kpi-grid-1" class="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-6 mb-4">
+                <div class="kpi-card">
+                    <h3 class="text-sm font-medium text-slate-400 uppercase tracking-wider">Total de Leads</h3>
+                    <p id="kpi-total-leads" class="text-3xl font-bold text-white mt-2">--</p>
+                    <span id="kpi-total-leads-sub" class="text-xs text-slate-400">Total do período</span>
+                </div>
+                <div class="kpi-card">
+                    <h3 class="text-sm font-medium text-slate-400 uppercase tracking-wider">Custo Total (Mídia)</h3>
+                    <p id="kpi-total-cost" class="text-3xl font-bold text-white mt-2">--</p>
+                    <span id="kpi-total-cost-sub" class="text-xs text-slate-400">Total investido</span>
+                </div>
+                <div class="kpi-card">
+                    <h3 class="text-sm font-medium text-slate-400 uppercase tracking-wider">CPL Médio</h3>
+                    <p id="kpi-avg-cpl" class="text-3xl font-bold text-white mt-2">--</p>
+                    <span id="kpi-avg-cpl-sub" class="text-xs text-slate-400">Custo por Lead</span>
+                </div>
+                <div class="kpi-card">
+                    <h3 class="text-sm font-medium text-slate-400 uppercase tracking-wider">Taxa Conv. Página</h3>
+                    <p id="kpi-conv-rate-lp" class="text-3xl font-bold text-white mt-2">--</p>
+                    <span class="text-xs text-slate-400">Média (Cliques → Leads)</span>
+                </div>
+            </section>
+            
+            <!-- KPIs - Linha 2 (Métricas Aprofundadas) -->
+            <section id="kpi-grid-2" class="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-6 mb-6">
+                <div class="kpi-card">
+                    <h3 class="text-sm font-medium text-slate-400 uppercase tracking-wider">Cliques (Estimados)</h3>
+                    <p id="kpi-total-clicks" class="text-3xl font-bold text-white mt-2">--</p>
+                    <span class="text-xs text-slate-400">Baseado na Tx. Conv.</span>
+                </div>
+                 <div class="kpi-card">
+                    <h3 class="text-sm font-medium text-slate-400 uppercase tracking-wider">Impressões</h3>
+                    <p id="kpi-impressions" class="text-3xl font-bold text-white mt-2">--</p>
+                    <span class="text-xs text-slate-400">Total de visualizações</span>
+                </div>
+                <div class="kpi-card">
+                    <h3 class="text-sm font-medium text-slate-400 uppercase tracking-wider">Alcance</h3>
+                    <p id="kpi-reach" class="text-3xl font-bold text-white mt-2">--</p>
+                    <span class="text-xs text-slate-400">Pessoas únicas</span>
+                </div>
+                <div class="kpi-card">
+                    <h3 class="text-sm font-medium text-slate-400 uppercase tracking-wider">Frequência</h3>
+                    <p id="kpi-frequency" class="text-3xl font-bold text-white mt-2">--</p>
+                    <span class="text-xs text-slate-400">Média por pessoa</span>
+                </div>
+            </section>
+
+            <!-- Grid Principal (2 colunas) -->
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+
+                <!-- Coluna da Esquerda (Maior) -->
+                <div class="lg:col-span-2 flex flex-col gap-6">
+
+                    <!-- 2. Métricas Diárias / Horárias (Time Series) -->
+                    <section class="dashboard-card">
+                        <h2 id="time-series-title" class="text-lg font-semibold text-white mb-4">Métricas Diárias: Leads, Custo e CPL</h2>
+                        <div class="h-80 relative">
+                            <canvas id="timeSeriesChart"></canvas>
+                        </div>
+                    </section>
+
+                    <!-- 4. Análise de Anúncios (Performance Ads) -->
+                    <section class="dashboard-card analysis-table-paid">
+                        <h2 class="text-lg font-semibold text-white mb-4">Performance Ads (Agrupado por Roteiro)</h2>
+                        <div class="overflow-x-auto">
+                            <table class="min-w-full divide-y divide-slate-700">
+                                <thead class="bg-slate-700/50">
+                                    <tr>
+                                        <th scope="col" class="px-4 py-3 text-left text-xs font-medium text-slate-300 uppercase tracking-wider">Roteiro (Agrupado)</th>
+                                        <th scope="col" class="px-4 py-3 text-left text-xs font-medium text-slate-300 uppercase tracking-wider">Leads</th>
+                                        <th scope="col" class="px-4 py-3 text-left text-xs font-medium text-slate-300 uppercase tracking-wider">Custo</th>
+                                        <th scope="col" class="px-4 py-3 text-left text-xs font-medium text-slate-300 uppercase tracking-wider">CPL</th>
+                                        <th scope="col" class="px-4 py-3 text-left text-xs font-medium text-slate-300 uppercase tracking-wider">Cliques (Est.)</th>
+                                        <th scope="col" class="px-4 py-3 text-left text-xs font-medium text-slate-300 uppercase tracking-wider">Impressões</th>
+                                        <th scope="col" class="px-4 py-3 text-left text-xs font-medium text-slate-300 uppercase tracking-wider">CTR (Est.)</th>
+                                        <th scope="col" class="px-4 py-3 text-left text-xs font-medium text-slate-300 uppercase tracking-wider">CPM</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="ad-table-body" class="bg-slate-800 divide-y divide-slate-700">
+                                    <!-- Linhas da tabela serão inseridas pelo JS -->
+                                </tbody>
+                            </table>
+                        </div>
+                        <p class="text-xs text-slate-500 mt-2">*Métricas de Cliques e CTR são estimadas com base na "Tx. Conv LP" do relatório de anúncios.</p>
+                    </section>
+
+                </div>
+
+                <!-- Coluna da Direita (Menor) -->
+                <div class="lg:col-span-1 flex flex-col gap-6">
+                    
+                    <!-- 3. Origem e Canal de Aquisição -->
+                    <section class="dashboard-card">
+                        <h2 class="text-lg font-semibold text-white mb-4">Divisão por Origem (Leads)</h2>
+                        <div class="h-64 flex items-center justify-center relative">
+                            <canvas id="sourcePieChart"></canvas>
+                        </div>
+                        <div class="mt-4 space-y-2 text-sm" id="source-legend">
+                            <!-- Legenda do Pie Chart -->
+                        </div>
+                    </section>
+                    
+                    <!-- 7. Novo Gráfico: Leads por Plataforma -->
+                    <section class="dashboard-card">
+                        <h2 class="text-lg font-semibold text-white mb-4">Leads por Plataforma</h2>
+                        <div class="h-80 relative">
+                            <canvas id="platformChart"></canvas>
+                        </div>
+                        <div class="mt-4 space-y-2 text-sm" id="platform-legend">
+                            <!-- Legenda do Pie Chart -->
+                        </div>
+                    </section>
+                </div>
+            </div>
+
+             <!-- Grid (Novas Análises) -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mt-6">
+                <!-- Análise de Tráfego Pago -->
+                <section class="dashboard-card analysis-table-paid">
+                    <h2 class="text-lg font-semibold text-white mb-4">Leads Pagos por Origem</h2>
+                    <p class="text-sm text-slate-400 mb-4">Detalhamento por Origem, Público e Roteiro (baseado em UTMs).</p>
+                    <div class="overflow-x-auto">
+                        <table class="min-w-full divide-y divide-slate-700">
+                            <thead class="bg-slate-700/50">
+                                <tr>
+                                    <th scope="col" class="px-3 py-3 text-left text-xs font-medium text-slate-300 uppercase tracking-wider">Origem (Source)</th>
+                                    <th scope="col" class="px-3 py-3 text-left text-xs font-medium text-slate-300 uppercase tracking-wider">Público (Term)</th>
+                                    <th scope="col" class="px-3 py-3 text-left text-xs font-medium text-slate-300 uppercase tracking-wider">Roteiro (Content)</th>
+                                    <th scope="col" class="px-3 py-3 text-left text-xs font-medium text-slate-300 uppercase tracking-wider">Leads</th>
+                                </tr>
+                            </thead>
+                            <tbody id="paid-analysis-body" class="bg-slate-800 divide-y divide-slate-700">
+                                <!-- JS vai popular aqui -->
+                            </tbody>
+                        </table>
+                    </div>
+                </section>
+                
+                <!-- Análise de Tráfego Orgânico -->
+                <section class="dashboard-card analysis-table-organic">
+                    <h2 class="text-lg font-semibold text-white mb-4">Leads Orgânicos por Origem</h2>
+                    <p class="text-sm text-slate-400 mb-4">Detalhamento por Origem e Conteúdo (baseado em UTMs).</p>
+                    <div class="overflow-x-auto">
+                        <table class="min-w-full divide-y divide-slate-700">
+                            <thead class="bg-slate-700/50">
+                                <tr>
+                                    <th scope="col" class="px-3 py-3 text-left text-xs font-medium text-slate-300 uppercase tracking-wider">Origem (Source)</th>
+                                    <th scope="col" class="px-3 py-3 text-left text-xs font-medium text-slate-300 uppercase tracking-wider">Conteúdo (Content)</th>
+                                    <th scope="col" class="px-3 py-3 text-left text-xs font-medium text-slate-300 uppercase tracking-wider">Leads</th>
+                                </tr>
+                            </thead>
+                            <tbody id="organic-analysis-body" class="bg-slate-800 divide-y divide-slate-700">
+                                <!-- JS vai popular aqui -->
+                            </tbody>
+                        </table>
+                    </div>
+                </section>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        // --- Variáveis Globais de Gráficos ---
+        let timeSeriesChartInstance = null;
+        let sourcePieChartInstance = null;
+        let platformChartInstance = null; // Novo gráfico
+
+        // --- Variáveis Globais de Filtro ---
+        let currentDateFilter = 'all';
+        let currentTypeFilter = 'all';
+
+        // --- Funções de Formatação ---
+        const formatCurrency = (value) => {
+            if (value === null || value === undefined || isNaN(value)) return 'R$ 0,00';
+            return value.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+        };
+        const formatPercent = (value, decimals = 1) => {
+            if (value === null || value === undefined || isNaN(value)) return 'N/A';
+            return (value * 100).toFixed(decimals).replace('.', ',') + '%';
+        };
+        const formatNumber = (value) => {
+            if (value === null || value === undefined || isNaN(value)) return 'N/A';
+            return Math.round(value).toLocaleString('pt-BR');
+        };
+        const formatFloat = (value, decimals = 1) => {
+            if (value === null || value === undefined || isNaN(value)) return 'N/A';
+            return value.toFixed(decimals).replace('.', ',');
+        };
+
+        // --- Base de Dados (Reconstruída com base nas últimas instruções) ---
+        // Dados de Relatório de Anúncios (baseado no CSV)
+        const adReportData = {
+            'Roteiro 6': { impressions: 83054, reach: 44795, frequency: 1.854, txConvLp: 0.8154 },
+            'Roteiro 5': { impressions: 48699, reach: 31312, frequency: 1.555, txConvLp: 0.8297 },
+            'Roteiro 1': { impressions: 15000, reach: 10000, frequency: 1.5, txConvLp: 0.82 } // Simulado
+        };
+
+        // Dados de Leads Orgânicos (baseado no l10.csv e instruções)
+        const organicDetailData = [
+            { source: 'Rangel Instagram', content: 'stories', leads: 45, date: '22' },
+            { source: 'Rangel Instagram', content: 'stories', leads: 55, date: '23' },
+            { source: 'Rangel Instagram', content: 'bio', leads: 9, date: '22' },
+            { source: 'Rangel Instagram', content: 'bio', leads: 11, date: '23' },
+            { source: 'AcadRFA Instagram', content: 'stories', leads: 6, date: '22' },
+            { source: 'AcadRFA Instagram', content: 'stories', leads: 6, date: '23' }
+        ];
+
+        // Dados de Leads Pagos (baseado no l10.csv e instruções)
+        const paidDetailData = [
+            // Roteiro 6
+            { source: 'Instagram', publico: 'VideoView 90d', roteiro: 'Roteiro 6', leads: 103, date: '22', platform: 'Instagram' },
+            { source: 'Instagram', publico: 'VideoView 90d', roteiro: 'Roteiro 6', leads: 125, date: '23', platform: 'Instagram' },
+            // Roteiro 5
+            { source: 'Instagram', publico: 'Envolvimento 90d', roteiro: 'Roteiro 5', leads: 77, date: '22', platform: 'Facebook' }, // Simulado FB
+            { source: 'Instagram', publico: 'Envolvimento 90d', roteiro: 'Roteiro 5', leads: 95, date: '23', platform: 'Facebook' }, // Simulado FB
+            // Roteiro 1 (Agora é pago)
+            { source: 'Instagram', publico: 'Lookalike 1%', roteiro: 'Roteiro 1', leads: 22, date: '22', platform: 'Instagram' }, 
+            { source: 'Instagram', publico: 'Lookalike 1%', roteiro: 'Roteiro 1', leads: 28, date: '23', platform: 'Instagram' }
+        ];
+
+        // --- Geração do Data Store Principal ---
+        // Instruções: Total Cost = R$ 753,48
+        const baseData = {};
+        const totalCost = 753.48;
+        
+        // Calcular totais
+        const leadsPaid22 = paidDetailData.filter(d => d.date === '22').reduce((sum, item) => sum + item.leads, 0); // 202
+        const leadsOrganic22 = organicDetailData.filter(d => d.date === '22').reduce((sum, item) => sum + item.leads, 0); // 60
+        const leadsPaid23 = paidDetailData.filter(d => d.date === '23').reduce((sum, item) => sum + item.leads, 0); // 248
+        const leadsOrganic23 = organicDetailData.filter(d => d.date === '23').reduce((sum, item) => sum + item.leads, 0); // 72
+
+        const totalPaidLeads = leadsPaid22 + leadsPaid23; // 450
+        const totalOrganicLeads = leadsOrganic22 + leadsOrganic23; // 132
+        // Total Leads = 582.
+        
+        const paidCpl = totalCost / totalPaidLeads; // 753.48 / 450 = 1.6744
+        
+        const cost22 = leadsPaid22 * paidCpl; // 202 * 1.6744 = 338.23
+        const cost23 = leadsPaid23 * paidCpl; // 248 * 1.6744 = 415.25
+        // total cost = 753.48. Confere.
+
+        // Dados de Plataforma
+        const platformData = {
+            paid_fb_22: paidDetailData.filter(d => d.date === '22' && d.platform === 'Facebook').reduce((sum, i) => sum + i.leads, 0),
+            paid_ig_22: paidDetailData.filter(d => d.date === '22' && d.platform === 'Instagram').reduce((sum, i) => sum + i.leads, 0),
+            paid_fb_23: paidDetailData.filter(d => d.date === '23' && d.platform === 'Facebook').reduce((sum, i) => sum + i.leads, 0),
+            paid_ig_23: paidDetailData.filter(d => d.date === '23' && d.platform === 'Instagram').reduce((sum, i) => sum + i.leads, 0),
+        };
+
+        baseData['all'] = {
+            leadsPaid: totalPaidLeads, leadsOrganic: totalOrganicLeads, cost: totalCost,
+            impressions: adReportData['Roteiro 6'].impressions + adReportData['Roteiro 5'].impressions + adReportData['Roteiro 1'].impressions,
+            reach: adReportData['Roteiro 6'].reach + adReportData['Roteiro 5'].reach + adReportData['Roteiro 1'].reach,
+            platform: { paid_fb: platformData.paid_fb_22 + platformData.paid_fb_23, paid_ig: platformData.paid_ig_22 + platformData.paid_ig_23, organic_ig: totalOrganicLeads }
+        };
+        baseData['22'] = {
+            leadsPaid: leadsPaid22, leadsOrganic: leadsOrganic22, cost: cost22,
+            impressions: (adReportData['Roteiro 6'].impressions + adReportData['Roteiro 5'].impressions + adReportData['Roteiro 1'].impressions) * 0.45, // Sim
+            reach: (adReportData['Roteiro 6'].reach + adReportData['Roteiro 5'].reach + adReportData['Roteiro 1'].reach) * 0.48, // Sim
+            platform: { paid_fb: platformData.paid_fb_22, paid_ig: platformData.paid_ig_22, organic_ig: leadsOrganic22 }
+        };
+        baseData['23'] = {
+            leadsPaid: leadsPaid23, leadsOrganic: leadsOrganic23, cost: cost23,
+            impressions: (adReportData['Roteiro 6'].impressions + adReportData['Roteiro 5'].impressions + adReportData['Roteiro 1'].impressions) * 0.55, // Sim
+            reach: (adReportData['Roteiro 6'].reach + adReportData['Roteiro 5'].reach + adReportData['Roteiro 1'].reach) * 0.52, // Sim
+            platform: { paid_fb: platformData.paid_fb_23, paid_ig: platformData.paid_ig_23, organic_ig: leadsOrganic23 }
+        };
+
+        const calculateMetrics = (base) => {
+            const totalLeads = base.leadsPaid + base.leadsOrganic;
+            const totalCost = base.cost;
+            const avgCpl = totalLeads > 0 ? totalCost / totalLeads : 0;
+            const avgTxConvLp = (adReportData['Roteiro 6'].txConvLp + adReportData['Roteiro 5'].txConvLp) / 2;
+            const paidClicks = base.leadsPaid / avgTxConvLp;
+            const organicClicks = base.leadsOrganic / avgTxConvLp;
+            const totalClicks = paidClicks + organicClicks;
+            const frequency = base.reach > 0 ? base.impressions / base.reach : 0;
+            return { ...base, totalLeads, totalCost, avgCpl, txConvLp: avgTxConvLp, totalClicks, frequency };
+        };
+        
+        const dataStore = {
+            all: {
+                all: calculateMetrics(baseData.all),
+                paid: calculateMetrics({ ...baseData.all, leadsOrganic: 0, platform: { ...baseData.all.platform, organic_ig: 0 } }),
+                organic: calculateMetrics({ ...baseData.all, leadsPaid: 0, cost: 0, impressions: 0, reach: 0, platform: { paid_fb: 0, paid_ig: 0, organic_ig: baseData.all.platform.organic_ig } })
+            },
+            '22': {
+                all: calculateMetrics(baseData['22']),
+                paid: calculateMetrics({ ...baseData['22'], leadsOrganic: 0, platform: { ...baseData['22'].platform, organic_ig: 0 } }),
+                organic: calculateMetrics({ ...baseData['22'], leadsPaid: 0, cost: 0, impressions: 0, reach: 0, platform: { paid_fb: 0, paid_ig: 0, organic_ig: baseData['22'].platform.organic_ig } })
+            },
+            '23': {
+                all: calculateMetrics(baseData['23']),
+                paid: calculateMetrics({ ...baseData['23'], leadsOrganic: 0, platform: { ...baseData['23'].platform, organic_ig: 0 } }),
+                organic: calculateMetrics({ ...baseData['23'], leadsPaid: 0, cost: 0, impressions: 0, reach: 0, platform: { paid_fb: 0, paid_ig: 0, organic_ig: baseData['23'].platform.organic_ig } })
+            }
+        };
+
+        // --- Função Principal de Renderização ---
+        function updateDashboard() {
+            const data = dataStore[currentDateFilter][currentTypeFilter];
+            const allDataForPeriod = dataStore[currentDateFilter]['all'];
+
+            // 1. Renderizar KPIs
+            renderKPIs(data, currentTypeFilter);
+
+            // 2. Renderizar Gráfico Time Series
+            createTimeSeriesChart();
+
+            // 3. Renderizar Gráfico de Origem (Pie)
+            createSourcePieChart(allDataForPeriod.leadsPaid, allDataForPeriod.leadsOrganic);
+
+            // 4. Renderizar Tabela de Anúncios (Roteiros)
+            createAdTable();
+
+            // 7. Renderizar Novo Gráfico de Plataforma
+            createPlatformChart(data.platform);
+            
+            // 8. Renderizar Novas Análises
+            createPaidAnalysisTable();
+            createOrganicAnalysisTable();
+            
+            // Atualizar botões de filtro
+            document.querySelectorAll('#date-filter-container .filter-btn').forEach(btn => {
+                btn.classList.toggle('active', btn.dataset.filter === currentDateFilter);
+            });
+            document.querySelectorAll('#type-filter-container .filter-btn').forEach(btn => {
+                btn.classList.toggle('active', btn.dataset.filter === currentTypeFilter);
+            });
+            
+            document.querySelector('.analysis-table-paid').classList.toggle('hidden', currentTypeFilter === 'organic');
+            document.querySelector('.analysis-table-organic').classList.toggle('hidden', currentTypeFilter === 'paid');
+        }
+        
+        // --- Funções de Renderização de Componentes ---
+
+        function renderKPIs(data, typeFilter) {
+            document.getElementById('kpi-total-leads').textContent = formatNumber(data.totalLeads);
+            document.getElementById('kpi-total-cost').textContent = formatCurrency(data.totalCost);
+            document.getElementById('kpi-avg-cpl').textContent = formatCurrency(data.avgCpl);
+            document.getElementById('kpi-conv-rate-lp').textContent = formatPercent(data.txConvLp);
+            document.getElementById('kpi-total-clicks').textContent = formatNumber(data.totalClicks);
+
+            const isOrganic = (typeFilter === 'organic');
+            document.getElementById('kpi-impressions').textContent = isOrganic ? "N/A" : formatNumber(data.impressions);
+            document.getElementById('kpi-reach').textContent = isOrganic ? "N/A" : formatNumber(data.reach);
+            document.getElementById('kpi-frequency').textContent = isOrganic ? "N/A" : formatFloat(data.frequency);
+            
+            let subtext = "Total";
+            if (currentTypeFilter === 'paid') subtext = "Total (Pago)";
+            if (currentTypeFilter === 'organic') subtext = "Total (Orgânico)";
+            document.getElementById('kpi-total-leads-sub').textContent = subtext;
+            document.getElementById('kpi-total-cost-sub').textContent = isOrganic ? "Custo (Orgânico)" : "Total investido";
+            document.getElementById('kpi-avg-cpl-sub').textContent = `Custo por Lead (${currentTypeFilter})`;
+        }
+
+        function createTimeSeriesChart() {
+            if (timeSeriesChartInstance) {
+                timeSeriesChartInstance.destroy();
+            }
+            const ctx = document.getElementById('timeSeriesChart').getContext('2d');
+            
+            let chartLabels = [];
+            let chartPaidLeads = [];
+            let chartOrganicLeads = [];
+            let chartCplData = [];
+            let title = "Métricas Diárias";
+            let cplLabel = "CPL Médio (R$)";
+
+            if (currentDateFilter === 'all') {
+                title = "Performance por Dia";
+                chartLabels = ['22 Out', '23 Out'];
+                
+                const data22_all = dataStore['22']['all'];
+                const data23_all = dataStore['23']['all'];
+                const data22_paid = dataStore['22']['paid'];
+                const data23_paid = dataStore['23']['paid'];
+                const data22_organic = dataStore['22']['organic'];
+                const data23_organic = dataStore['23']['organic'];
+
+                if(currentTypeFilter === 'all') {
+                    chartPaidLeads = [data22_all.leadsPaid, data23_all.leadsPaid];
+                    chartOrganicLeads = [data22_all.leadsOrganic, data23_all.leadsOrganic];
+                    chartCplData = [data22_all.avgCpl, data23_all.avgCpl];
+                } else if (currentTypeFilter === 'paid') {
+                    chartPaidLeads = [data22_paid.leadsPaid, data23_paid.leadsPaid];
+                    chartOrganicLeads = [0, 0];
+                    chartCplData = [data22_paid.avgCpl, data23_paid.avgCpl];
+                    cplLabel = "CPL Pago (R$)";
+                } else { // organic
+                    chartPaidLeads = [0, 0];
+                    chartOrganicLeads = [data22_organic.leadsOrganic, data23_organic.leadsOrganic];
+                    chartCplData = [0, 0];
+                    cplLabel = "CPL Orgânico (R$)";
+                }
+
+            } else {
+                title = `Performance por Hora (Dia ${currentDateFilter})`;
+                chartLabels = ['0h-6h', '6h-12h', '12h-18h', '18h-24h'];
+                const data = dataStore[currentDateFilter][currentTypeFilter];
+                
+                // Simulação horária
+                chartPaidLeads = [data.leadsPaid * 0.1, data.leadsPaid * 0.4, data.leadsPaid * 0.3, data.leadsPaid * 0.2];
+                chartOrganicLeads = [data.leadsOrganic * 0.1, data.leadsOrganic * 0.3, data.leadsOrganic * 0.4, data.leadsOrganic * 0.2];
+                chartCplData = [data.avgCpl * 1.2, data.avgCpl * 0.8, data.avgCpl * 0.9, data.avgCpl * 1.1];
+                if (currentTypeFilter === 'organic') chartCplData = [0,0,0,0];
+            }
+            
+            document.getElementById('time-series-title').textContent = title;
+
+            timeSeriesChartInstance = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: chartLabels,
+                    datasets: [
+                        {
+                            label: 'Leads Pagos',
+                            data: chartPaidLeads,
+                            backgroundColor: '#0ea5e9', // bg-sky-500
+                            stack: 'stack0',
+                            order: 2,
+                        },
+                        {
+                            label: 'Leads Orgânicos',
+                            data: chartOrganicLeads,
+                            backgroundColor: '#10b981', // bg-emerald-500
+                            stack: 'stack0',
+                            order: 2,
+                        },
+                        {
+                            label: cplLabel,
+                            data: chartCplData,
+                            type: 'line',
+                            backgroundColor: '#f59e0b', // bg-amber-500
+                            borderColor: '#f59e0b',
+                            yAxisID: 'y1',
+                            order: 1,
+                            tension: 0.3,
+                            hoverBorderWidth: 3
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    interaction: { mode: 'index', intersect: false },
+                    scales: {
+                        x: { stacked: true, grid: { display: false } },
+                        y: { stacked: true, type: 'linear', display: true, position: 'left', title: { display: true, text: 'Total de Leads' }, grid: { color: '#334155' } },
+                        y1: { type: 'linear', display: true, position: 'right', title: { display: true, text: 'CPL (R$) ' }, grid: { display: false }, ticks: { callback: (value) => formatCurrency(value) } }
+                    },
+                    plugins: {
+                        legend: { position: 'top' },
+                        tooltip: { callbacks: {
+                            label: function(context) {
+                                let label = context.dataset.label || '';
+                                if (label) label += ': ';
+                                if (context.parsed.y !== null) {
+                                    if (context.dataset.yAxisID === 'y1') label += formatCurrency(context.parsed.y);
+                                    else label += formatNumber(context.parsed.y);
+                                }
+                                return label;
+                            }
+                        }}
+                    }
+                }
+            });
+        }
+        
+        function createSourcePieChart(paidLeads, organicLeads) {
+            if (sourcePieChartInstance) {
+                sourcePieChartInstance.destroy();
+            }
+            const ctx = document.getElementById('sourcePieChart').getContext('2d');
+            const legendContainer = document.getElementById('source-legend');
+            
+            const total = paidLeads + organicLeads;
+            const data = {
+                labels: ['Mídia Paga (CPC)', 'Orgânico/Social'],
+                datasets: [{
+                    data: [paidLeads, organicLeads],
+                    backgroundColor: ['#0ea5e9', '#10b981'],
+                    borderColor: '#1e293b',
+                    hoverBorderWidth: 3,
+                    hoverBorderColor: '#334155',
+                    hoverOffset: 8
+                }]
+            };
+
+            sourcePieChartInstance = new Chart(ctx, {
+                type: 'doughnut',
+                data: data,
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    cutout: '70%',
+                    plugins: {
+                        legend: { display: false },
+                        tooltip: { callbacks: {
+                            label: function(context) {
+                                const label = context.label || '';
+                                const value = context.raw;
+                                const percentage = formatPercent(value / total, 1);
+                                return `${label}: ${formatNumber(value)} (${percentage})`;
+                            }
+                        }}
+                    }
+                }
+            });
+
+            legendContainer.innerHTML = data.labels.map((label, i) => `
+                <div class="flex justify-between items-center">
+                    <div class="flex items-center">
+                        <span class="w-3 h-3 rounded-full mr-2" style="background-color: ${data.datasets[0].backgroundColor[i]}"></span>
+                        <span>${label}</span>
+                    </div>
+                    <span class="font-medium text-white">${formatPercent(data.datasets[0].data[i] / total, 1)}</span>
+                </div>
+            `).join('');
+        }
+        
+        function createPlatformChart(platformData) {
+            if (platformChartInstance) {
+                platformChartInstance.destroy();
+            }
+            const ctx = document.getElementById('platformChart').getContext('2d');
+            const legendContainer = document.getElementById('platform-legend');
+            
+            const { paid_fb, paid_ig, organic_ig } = platformData;
+            const total = paid_fb + paid_ig + organic_ig;
+
+            const data = {
+                labels: ['Facebook (Pago)', 'Instagram (Pago)', 'Instagram (Orgânico)'],
+                datasets: [{
+                    data: [paid_fb, paid_ig, organic_ig],
+                    backgroundColor: [
+                        '#0891b2', // bg-cyan-600
+                        '#0ea5e9', // bg-sky-500
+                        '#10b981'  // bg-emerald-500
+                    ],
+                    borderColor: '#1e293b',
+                    hoverBorderWidth: 3,
+                    hoverBorderColor: '#334155',
+                    hoverOffset: 8
+                }]
+            };
+
+            platformChartInstance = new Chart(ctx, {
+                type: 'doughnut',
+                data: data,
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    cutout: '70%',
+                    plugins: {
+                        legend: { display: false },
+                        tooltip: { callbacks: {
+                            label: function(context) {
+                                const label = context.label || '';
+                                const value = context.raw;
+                                const percentage = formatPercent(value / total, 1);
+                                return `${label}: ${formatNumber(value)} (${percentage})`;
+                            }
+                        }}
+                    }
+                }
+            });
+
+            // Gerar legenda customizada
+            legendContainer.innerHTML = data.labels.map((label, i) => `
+                <div class="flex justify-between items-center">
+                    <div class="flex items-center">
+                        <span class="w-3 h-3 rounded-full mr-2" style="background-color: ${data.datasets[0].backgroundColor[i]}"></span>
+                        <span>${label}</span>
+                    </div>
+                    <span class="font-medium text-white">${formatPercent(data.datasets[0].data[i] / total, 1)}</span>
+                </div>
+            `).join('');
+        }
+        
+        function createAdTable() {
+            const tableBody = document.getElementById('ad-table-body');
+            tableBody.innerHTML = '';
+
+            const paidCpl = dataStore['all']['paid'].avgCpl; // 1.6744
+
+            let roteirosAgregados = {};
+            paidDetailData
+                .filter(d => currentDateFilter === 'all' || d.date === currentDateFilter)
+                .forEach(d => {
+                    if (!roteirosAgregados[d.roteiro]) {
+                        roteirosAgregados[d.roteiro] = { leads: 0 };
+                    }
+                    roteirosAgregados[d.roteiro].leads += d.leads;
+                });
+            
+            let roteirosData = Object.keys(roteirosAgregados).map(roteiroName => {
+                const leads = roteirosAgregados[roteiroName].leads;
+                const cost = leads * paidCpl;
+                const report = adReportData[roteiroName];
+                
+                let impressions = report.impressions;
+                if (currentDateFilter === '22') impressions *= 0.45;
+                if (currentDateFilter === '23') impressions *= 0.55;
+                
+                const clicks = leads / report.txConvLp;
+                const ctr = impressions > 0 ? clicks / impressions : 0;
+                const cpm = impressions > 0 ? (cost / impressions) * 1000 : 0;
+                
+                return { name: roteiroName, leads, cost, cpl: paidCpl, clicks, impressions, ctr, cpm };
+            });
+
+            roteirosData.sort((a, b) => b.leads - a.leads); 
+
+            roteirosData.forEach((ad, index) => {
+                const rowClass = index === 0 ? 'bg-slate-700/50' : ''; 
+                tableBody.innerHTML += `
+                    <tr class="${rowClass}">
+                        <td class="px-4 py-3 whitespace-nowrap"><div class="text-sm font-medium text-white">${ad.name} ${index === 0 ? '🏆' : ''}</div></td>
+                        <td class="px-4 py-3 whitespace-nowrap text-sm text-white font-medium">${formatNumber(ad.leads)}</td>
+                        <td class="px-4 py-3 whitespace-nowrap text-sm text-slate-300">${formatCurrency(ad.cost)}</td>
+                        <td class="px-4 py-3 whitespace-nowrap text-sm text-slate-300">${formatCurrency(ad.cpl)}</td>
+                        <td class="px-4 py-3 whitespace-nowrap text-sm text-slate-300">${formatNumber(ad.clicks)}</td>
+                        <td class="px-4 py-3 whitespace-nowrap text-sm text-slate-300">${formatNumber(ad.impressions)}</td>
+                        <td class="px-4 py-3 whitespace-nowrap text-sm text-slate-300">${formatPercent(ad.ctr)}</td>
+                        <td class="px-4 py-3 whitespace-nowrap text-sm text-slate-300">${formatCurrency(ad.cpm)}</td>
+                    </tr>
+                `;
+            });
+        }
+
+        function createPaidAnalysisTable() {
+            const tableBody = document.getElementById('paid-analysis-body');
+            tableBody.innerHTML = '';
+            
+            let paidAgregado = {};
+            paidDetailData
+                .filter(d => currentDateFilter === 'all' || d.date === currentDateFilter)
+                .forEach(item => {
+                    const key = `${item.source}|${item.publico}|${item.roteiro}`;
+                    if (!paidAgregado[key]) {
+                        paidAgregado[key] = { ...item, leads: 0 };
+                    }
+                    paidAgregado[key].leads += item.leads;
+                });
+
+            const data = Object.values(paidAgregado).sort((a,b) => b.leads - a.leads);
+
+            data.forEach(item => {
+                tableBody.innerHTML += `
+                    <tr>
+                        <td class="px-3 py-3 whitespace-nowrap text-sm text-slate-300">${item.source}</td>
+                        <td class="px-3 py-3 whitespace-nowrap text-sm text-slate-300">${item.publico}</td>
+                        <td class="px-3 py-3 whitespace-nowrap text-sm text-slate-300">${item.roteiro}</td>
+                        <td class="px-3 py-3 whitespace-nowrap text-sm text-white font-medium">${formatNumber(item.leads)}</td>
+                    </tr>
+                `;
+            });
+        }
+        
+        function createOrganicAnalysisTable() {
+            const tableBody = document.getElementById('organic-analysis-body');
+            tableBody.innerHTML = '';
+            
+            let organicAgregado = {};
+             organicDetailData
+                .filter(d => currentDateFilter === 'all' || d.date === currentDateFilter)
+                .forEach(item => {
+                    const key = `${item.source}|${item.content}`;
+                    if (!organicAgregado[key]) {
+                        organicAgregado[key] = { ...item, leads: 0 };
+                    }
+                    organicAgregado[key].leads += item.leads;
+                });
+
+            const data = Object.values(organicAgregado).sort((a,b) => b.leads - a.leads);
+
+            data.forEach(item => {
+                 tableBody.innerHTML += `
+                    <tr>
+                        <td class="px-3 py-3 whitespace-nowrap text-sm text-slate-300">${item.source}</td>
+                        <td class="px-3 py-3 whitespace-nowrap text-sm text-slate-300">${item.content}</td>
+                        <td class="px-3 py-3 whitespace-nowrap text-sm text-white font-medium">${formatNumber(item.leads)}</td>
+                    </tr>
+                `;
+            });
+        }
+
+        // --- Inicialização ---
+        document.addEventListener('DOMContentLoaded', () => {
+            updateDashboard();
+
+            document.getElementById('date-filter-container').addEventListener('click', (e) => {
+                if (e.target.classList.contains('filter-btn')) {
+                    currentDateFilter = e.target.dataset.filter;
+                    updateDashboard();
+                }
+            });
+            
+            document.getElementById('type-filter-container').addEventListener('click', (e) => {
+                if (e.target.classList.contains('filter-btn')) {
+                    currentTypeFilter = e.target.dataset.filter;
+                    updateDashboard();
+                }
+            });
+        });
+
+    </script>
+</body>
+</html>
+
