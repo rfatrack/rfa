@@ -1,0 +1,125 @@
+campaigns:
+- conv_rate: 0.80562061
+  cost: 582.72
+  cpl: 0.84697674
+  cpm: 5.48716065
+  ctr: 0.0180325245
+  impressions: 106197
+  leads: 337
+  name: VideoView
+  reach: 52777
+- conv_rate: 0.82549317
+  cost: 346.96
+  cpl: 0.63779412
+  cpm: 5.09478569
+  ctr: 0.020660489599999998
+  impressions: 68101
+  leads: 266
+  name: Envolvimento
+  reach: 40816
+daily_metrics:
+- cost: 206.25
+  cpl: 0.75
+  day: 22
+  organic_leads: 78
+  paid_leads: 275
+  total_leads: 353
+- cost: 212.25
+  cpl: 0.75
+  day: 23
+  organic_leads: 43
+  paid_leads: 283
+  total_leads: 326
+- cost: 33.75
+  cpl: 0.75
+  day: 24
+  organic_leads: 7
+  paid_leads: 45
+  total_leads: 52
+kpis:
+  avg_conv_rate: 0.8143
+  avg_cpl: 0.75
+  frequency: 1.8622973940358787
+  organic_leads: 128
+  paid_leads: 603
+  total_clicks_estimated: 740
+  total_cost: 929.6800000000001
+  total_impressions: 174298
+  total_leads: 734
+  total_reach: 93593
+organic_analysis:
+- content: bio
+  leads: 4
+  source: AcadRFA Instagram
+- content: stories
+  leads: 13
+  source: AcadRFA Instagram
+- content: bio
+  leads: 6
+  source: Rangel Instagram
+- content: linkme
+  leads: 6
+  source: Rangel Instagram
+- content: stories
+  leads: 96
+  source: Rangel Instagram
+- content: video
+  leads: 3
+  source: Rangel TikTok
+paid_analysis:
+- leads: 1
+  publico: 0101 - VideoView 90d
+  roteiro: Roteiro 2
+  source: Facebook
+- leads: 2
+  publico: 0102 - Envolvimento 90d
+  roteiro: Roteiro 2
+  source: Facebook
+- leads: 1
+  publico: 0102 - VideoView 90d
+  roteiro: Roteiro 2
+  source: Facebook
+- leads: 2
+  publico: 0103 - Envolvimento 90d
+  roteiro: Roteiro 3
+  source: Facebook
+- leads: 2
+  publico: 0105 - Envolvimento 90d
+  roteiro: Roteiro 5
+  source: Facebook
+- leads: 1
+  publico: 0105 - VideoView 90d
+  roteiro: Roteiro 13
+  source: Facebook
+- leads: 1
+  publico: 0107 - VideoView 90d
+  roteiro: Roteiro 5
+  source: Facebook
+- leads: 3
+  publico: 0108 - Envolvimento 90d
+  roteiro: Roteiro 8
+  source: Facebook
+- leads: 1
+  publico: 0108 - VideoView 90d
+  roteiro: Roteiro 5
+  source: Facebook
+- leads: 1
+  publico: 0109 - VideoView 90d
+  roteiro: Roteiro 2
+  source: Facebook
+source_breakdown:
+- leads: 570
+  source: Instagram (Pago)
+  type: paid
+- leads: 33
+  source: Facebook (Pago)
+  type: paid
+- leads: 17
+  source: AcadRFA Instagram (Orgânico)
+  type: organic
+- leads: 108
+  source: Rangel Instagram (Orgânico)
+  type: organic
+- leads: 3
+  source: Rangel TikTok (Orgânico)
+  type: organic

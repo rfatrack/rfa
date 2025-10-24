@@ -1,0 +1,185 @@
+{
+  "kpis": {
+    "total_leads": 734,
+    "total_cost": 929.6800000000001,
+    "avg_cpl": 0.75,
+    "avg_conv_rate": 0.8143,
+    "total_clicks_estimated": 740,
+    "total_impressions": 174298,
+    "total_reach": 93593,
+    "frequency": 1.8622973940358787,
+    "paid_leads": 603,
+    "organic_leads": 128
+  },
+  "daily_metrics": [
+    {
+      "day": 22,
+      "paid_leads": 275,
+      "organic_leads": 78,
+      "total_leads": 353,
+      "cost": 206.25,
+      "cpl": 0.75
+    },
+    {
+      "day": 23,
+      "paid_leads": 283,
+      "organic_leads": 43,
+      "total_leads": 326,
+      "cost": 212.25,
+      "cpl": 0.75
+    },
+    {
+      "day": 24,
+      "paid_leads": 45,
+      "organic_leads": 7,
+      "total_leads": 52,
+      "cost": 33.75,
+      "cpl": 0.75
+    }
+  ],
+  "campaigns": [
+    {
+      "name": "VideoView",
+      "leads": 337,
+      "cost": 582.72,
+      "cpl": 0.84697674,
+      "impressions": 106197,
+      "reach": 52777,
+      "ctr": 0.0180325245,
+      "cpm": 5.48716065,
+      "conv_rate": 0.80562061
+    },
+    {
+      "name": "Envolvimento",
+      "leads": 266,
+      "cost": 346.96,
+      "cpl": 0.63779412,
+      "impressions": 68101,
+      "reach": 40816,
+      "ctr": 0.020660489599999998,
+      "cpm": 5.09478569,
+      "conv_rate": 0.82549317
+    }
+  ],
+  "source_breakdown": [
+    {
+      "source": "Instagram (Pago)",
+      "leads": 570,
+      "type": "paid"
+    },
+    {
+      "source": "Facebook (Pago)",
+      "leads": 33,
+      "type": "paid"
+    },
+    {
+      "source": "AcadRFA Instagram (Orgânico)",
+      "leads": 17,
+      "type": "organic"
+    },
+    {
+      "source": "Rangel Instagram (Orgânico)",
+      "leads": 108,
+      "type": "organic"
+    },
+    {
+      "source": "Rangel TikTok (Orgânico)",
+      "leads": 3,
+      "type": "organic"
+    }
+  ],
+  "paid_analysis": [
+    {
+      "source": "Facebook",
+      "publico": "0101 - VideoView 90d",
+      "roteiro": "Roteiro 2",
+      "leads": 1
+    },
+    {
+      "source": "Facebook",
+      "publico": "0102 - Envolvimento 90d",
+      "roteiro": "Roteiro 2",
+      "leads": 2
+    },
+    {
+      "source": "Facebook",
+      "publico": "0102 - VideoView 90d",
+      "roteiro": "Roteiro 2",
+      "leads": 1
+    },
+    {
+      "source": "Facebook",
+      "publico": "0103 - Envolvimento 90d",
+      "roteiro": "Roteiro 3",
+      "leads": 2
+    },
+    {
+      "source": "Facebook",
+      "publico": "0105 - Envolvimento 90d",
+      "roteiro": "Roteiro 5",
+      "leads": 2
+    },
+    {
+      "source": "Facebook",
+      "publico": "0105 - VideoView 90d",
+      "roteiro": "Roteiro 13",
+      "leads": 1
+    },
+    {
+      "source": "Facebook",
+      "publico": "0107 - VideoView 90d",
+      "roteiro": "Roteiro 5",
+      "leads": 1
+    },
+    {
+      "source": "Facebook",
+      "publico": "0108 - Envolvimento 90d",
+      "roteiro": "Roteiro 8",
+      "leads": 3
+    },
+    {
+      "source": "Facebook",
+      "publico": "0108 - VideoView 90d",
+      "roteiro": "Roteiro 5",
+      "leads": 1
+    },
+    {
+      "source": "Facebook",
+      "publico": "0109 - VideoView 90d",
+      "roteiro": "Roteiro 2",
+      "leads": 1
+    }
+  ],
+  "organic_analysis": [
+    {
+      "source": "AcadRFA Instagram",
+      "content": "bio",
+      "leads": 4
+    },
+    {
+      "source": "AcadRFA Instagram",
+      "content": "stories",
+      "leads": 13
+    },
+    {
+      "source": "Rangel Instagram",
+      "content": "bio",
+      "leads": 6
+    },
+    {
+      "source": "Rangel Instagram",
+      "content": "linkme",
+      "leads": 6
+    },
+    {
+      "source": "Rangel Instagram",
+      "content": "stories",
+      "leads": 96
+    },
+    {
+      "source": "Rangel TikTok",
+      "content": "video",
+      "leads": 3
+    }
+  ]
+}

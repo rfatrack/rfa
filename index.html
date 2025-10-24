@@ -1,0 +1,1001 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard L10 - Performance de Leads</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        :root {
+            /* Primitive Color Tokens */
+            --color-white: rgba(255, 255, 255, 1);
+            --color-black: rgba(0, 0, 0, 1);
+            --color-cream-50: rgba(252, 252, 249, 1);
+            --color-cream-100: rgba(255, 255, 253, 1);
+            --color-gray-200: rgba(245, 245, 245, 1);
+            --color-gray-300: rgba(167, 169, 169, 1);
+            --color-gray-400: rgba(119, 124, 124, 1);
+            --color-slate-500: rgba(98, 108, 113, 1);
+            --color-brown-600: rgba(94, 82, 64, 1);
+            --color-charcoal-700: rgba(31, 33, 33, 1);
+            --color-charcoal-800: rgba(38, 40, 40, 1);
+            --color-slate-900: rgba(19, 52, 59, 1);
+            --color-teal-300: rgba(50, 184, 198, 1);
+            --color-teal-400: rgba(45, 166, 178, 1);
+            --color-teal-500: rgba(33, 128, 141, 1);
+            --color-teal-600: rgba(29, 116, 128, 1);
+            --color-teal-700: rgba(26, 104, 115, 1);
+            --color-teal-800: rgba(41, 150, 161, 1);
+            --color-red-400: rgba(255, 84, 89, 1);
+            --color-red-500: rgba(192, 21, 47, 1);
+            --color-orange-400: rgba(230, 129, 97, 1);
+            --color-orange-500: rgba(168, 75, 47, 1);
+
+            /* RGB versions for opacity control */
+            --color-brown-600-rgb: 94, 82, 64;
+            --color-teal-500-rgb: 33, 128, 141;
+            --color-slate-900-rgb: 19, 52, 59;
+            --color-slate-500-rgb: 98, 108, 113;
+            --color-red-500-rgb: 192, 21, 47;
+            --color-red-400-rgb: 255, 84, 89;
+            --color-orange-500-rgb: 168, 75, 47;
+            --color-orange-400-rgb: 230, 129, 97;
+            --color-gray-400-rgb: 119, 124, 124;
+            --color-teal-300-rgb: 50, 184, 198;
+            --color-gray-300-rgb: 167, 169, 169;
+            --color-gray-200-rgb: 245, 245, 245;
+
+            /* Semantic Color Tokens (Dark Mode) */
+            --color-background: var(--color-charcoal-700);
+            --color-surface: var(--color-charcoal-800);
+            --color-text: var(--color-gray-200);
+            --color-text-secondary: rgba(var(--color-gray-300-rgb), 0.7);
+            --color-primary: var(--color-teal-300);
+            --color-primary-hover: var(--color-teal-400);
+            --color-primary-active: var(--color-teal-800);
+            --color-secondary: rgba(var(--color-gray-400-rgb), 0.15);
+            --color-secondary-hover: rgba(var(--color-gray-400-rgb), 0.25);
+            --color-secondary-active: rgba(var(--color-gray-400-rgb), 0.3);
+            --color-border: rgba(var(--color-gray-400-rgb), 0.3);
+            --color-error: var(--color-red-400);
+            --color-success: var(--color-teal-300);
+            --color-warning: var(--color-orange-400);
+            --color-info: var(--color-gray-300);
+            --color-focus-ring: rgba(var(--color-teal-300-rgb), 0.4);
+            --color-btn-primary-text: var(--color-slate-900);
+            --color-card-border: rgba(var(--color-gray-400-rgb), 0.15);
+            --color-card-border-inner: rgba(var(--color-gray-400-rgb), 0.15);
+            --color-border-secondary: rgba(var(--color-gray-400-rgb), 0.2);
+            --color-select-caret: rgba(var(--color-gray-200-rgb), 0.8);
+
+            /* Typography */
+            --font-family-base: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            --font-size-xs: 11px;
+            --font-size-sm: 12px;
+            --font-size-base: 14px;
+            --font-size-md: 14px;
+            --font-size-lg: 16px;
+            --font-size-xl: 18px;
+            --font-size-2xl: 20px;
+            --font-size-3xl: 24px;
+            --font-size-4xl: 30px;
+            --font-weight-normal: 400;
+            --font-weight-medium: 500;
+            --font-weight-semibold: 550;
+            --font-weight-bold: 600;
+            --line-height-tight: 1.2;
+            --line-height-normal: 1.5;
+
+            /* Spacing */
+            --space-2: 2px;
+            --space-4: 4px;
+            --space-6: 6px;
+            --space-8: 8px;
+            --space-12: 12px;
+            --space-16: 16px;
+            --space-20: 20px;
+            --space-24: 24px;
+            --space-32: 32px;
+
+            /* Border Radius */
+            --radius-sm: 6px;
+            --radius-base: 8px;
+            --radius-md: 10px;
+            --radius-lg: 12px;
+
+            /* Shadows */
+            --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.2), 0 1px 2px rgba(0, 0, 0, 0.15);
+            --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.2), 0 2px 4px -1px rgba(0, 0, 0, 0.15);
+
+            /* Custom dashboard colors */
+            --color-blue: #0ea5e9;
+            --color-blue-hover: #0284c7;
+            --color-chart-1: #1FB8CD;
+            --color-chart-2: #FFC185;
+            --color-chart-3: #B4413C;
+            --color-chart-4: #ECEBD5;
+            --color-chart-5: #5D878F;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: var(--font-family-base);
+            background-color: var(--color-background);
+            color: var(--color-text);
+            font-size: var(--font-size-base);
+            line-height: var(--line-height-normal);
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: var(--space-24);
+        }
+
+        /* Header */
+        .header {
+            margin-bottom: var(--space-32);
+        }
+
+        .header h1 {
+            font-size: var(--font-size-3xl);
+            font-weight: var(--font-weight-bold);
+            margin-bottom: var(--space-16);
+            color: var(--color-text);
+        }
+
+        .filters {
+            display: flex;
+            gap: var(--space-16);
+            flex-wrap: wrap;
+        }
+
+        .filter-group {
+            display: flex;
+            flex-direction: column;
+            gap: var(--space-8);
+        }
+
+        .filter-label {
+            font-size: var(--font-size-sm);
+            font-weight: var(--font-weight-medium);
+            color: var(--color-text-secondary);
+        }
+
+        .filter-buttons {
+            display: flex;
+            gap: var(--space-8);
+        }
+
+        .filter-btn {
+            padding: var(--space-8) var(--space-16);
+            border: 1px solid var(--color-border);
+            background: var(--color-surface);
+            color: var(--color-text);
+            border-radius: var(--radius-base);
+            cursor: pointer;
+            transition: all 0.2s ease;
+            font-size: var(--font-size-sm);
+            font-weight: var(--font-weight-medium);
+        }
+
+        .filter-btn:hover {
+            background: var(--color-secondary-hover);
+        }
+
+        .filter-btn.active {
+            background: var(--color-blue);
+            color: white;
+            border-color: var(--color-blue);
+        }
+
+        /* KPI Cards */
+        .kpi-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: var(--space-20);
+            margin-bottom: var(--space-32);
+        }
+
+        .kpi-card {
+            background: var(--color-surface);
+            border: 1px solid var(--color-card-border);
+            border-radius: var(--radius-lg);
+            padding: var(--space-24);
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        .kpi-card:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-md);
+        }
+
+        .kpi-card h3 {
+            font-size: var(--font-size-sm);
+            font-weight: var(--font-weight-medium);
+            color: var(--color-text-secondary);
+            margin-bottom: var(--space-8);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .kpi-value {
+            font-size: var(--font-size-2xl);
+            font-weight: var(--font-weight-bold);
+            color: var(--color-text);
+        }
+
+        /* Main Grid */
+        .main-grid {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: var(--space-24);
+            margin-bottom: var(--space-32);
+        }
+
+        .chart-section {
+            background: var(--color-surface);
+            border: 1px solid var(--color-card-border);
+            border-radius: var(--radius-lg);
+            padding: var(--space-24);
+        }
+
+        .section-title {
+            font-size: var(--font-size-lg);
+            font-weight: var(--font-weight-semibold);
+            margin-bottom: var(--space-20);
+            color: var(--color-text);
+        }
+
+        .chart-container {
+            height: 300px;
+            margin-bottom: var(--space-24);
+        }
+
+        .pie-charts {
+            display: flex;
+            flex-direction: column;
+            gap: var(--space-24);
+        }
+
+        .pie-chart-container {
+            background: var(--color-surface);
+            border: 1px solid var(--color-card-border);
+            border-radius: var(--radius-lg);
+            padding: var(--space-20);
+        }
+
+        .pie-chart {
+            height: 200px;
+        }
+
+        /* Tables */
+        .table-container {
+            margin-top: var(--space-20);
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th, td {
+            padding: var(--space-12);
+            text-align: left;
+            border-bottom: 1px solid var(--color-border);
+        }
+
+        th {
+            font-weight: var(--font-weight-semibold);
+            color: var(--color-text-secondary);
+            font-size: var(--font-size-sm);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        td {
+            color: var(--color-text);
+            font-size: var(--font-size-sm);
+        }
+
+        tr:hover {
+            background: var(--color-secondary);
+        }
+
+        /* Bottom Grid - Alterado para 3 colunas */
+        .bottom-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); /* Novo layout */
+            gap: var(--space-24);
+        }
+
+        /* Responsive */
+        @media (max-width: 1200px) {
+            .main-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .pie-charts {
+                flex-direction: row;
+            }
+            
+            .bottom-grid {
+                grid-template-columns: 1fr; /* Volta para 1 coluna no mobile */
+            }
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: var(--space-16);
+            }
+            
+            .kpi-grid {
+                grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            }
+            
+            .bottom-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .pie-charts {
+                flex-direction: column;
+            }
+            
+            .filters {
+                flex-direction: column;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .kpi-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .filter-buttons {
+                flex-wrap: wrap;
+            }
+        }
+
+        /* Loading state */
+        .loading {
+            opacity: 0.6;
+            pointer-events: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <header class="header">
+            <h1>L10 — Analytics Marketing e Performance</h1>
+            <div class="filters">
+                <div class="filter-group">
+                    <label class="filter-label">Período</label>
+                    <div class="filter-buttons" id="periodFilter">
+                        <button class="filter-btn active" data-period="all">Período Completo</button>
+                        <button class="filter-btn" data-period="22">Dia 22</button>
+                        <button class="filter-btn" data-period="23">Dia 23</button>
+                        <button class="filter-btn" data-period="24">Dia 24</button>
+                    </div>
+                </div>
+                <div class="filter-group">
+                    <label class="filter-label">Tipo</label>
+                    <div class="filter-buttons" id="typeFilter">
+                        <button class="filter-btn active" data-type="all">Todos</button>
+                        <button class="filter-btn" data-type="paid">Pago</button>
+                        <button class="filter-btn" data-type="organic">Orgânico</button>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <!-- KPI Cards -->
+        <div class="kpi-grid" id="kpiGrid">
+            <div class="kpi-card">
+                <h3>Total de Leads</h3>
+                <div class="kpi-value" id="totalLeads">734</div>
+            </div>
+            <div class="kpi-card">
+                <h3>Custo Total</h3>
+                <div class="kpi-value" id="totalCost">R$ 929,68</div>
+            </div>
+            <div class="kpi-card">
+                <!-- CPL Médio ajustado na lógica JS -->
+                <h3>CPL Médio</h3>
+                <div class="kpi-value" id="avgCPL">R$ 0,75</div>
+            </div>
+            <div class="kpi-card">
+                <!-- Taxa Conv. Página alterada para 81,43% -->
+                <h3>Taxa Conv. Página</h3>
+                <div class="kpi-value" id="convRate">81,43%</div>
+            </div>
+            <div class="kpi-card">
+                <h3>Cliques Estimados</h3>
+                <div class="kpi-value" id="totalClicks">740</div>
+            </div>
+            <div class="kpi-card">
+                <h3>Impressões</h3>
+                <div class="kpi-value" id="totalImpressions">174.298</div>
+            </div>
+            <div class="kpi-card">
+                <h3>Alcance</h3>
+                <div class="kpi-value" id="totalReach">93.593</div>
+            </div>
+            <div class="kpi-card">
+                <h3>Frequência</h3>
+                <div class="kpi-value" id="frequency">1,86</div>
+            </div>
+        </div>
+
+        <!-- Main Content -->
+        <div class="main-grid">
+            <!-- Left Column -->
+            <div class="chart-section">
+                <h2 class="section-title">Performance Temporal</h2>
+                <div class="chart-container">
+                    <canvas id="timeSeriesChart"></canvas>
+                </div>
+                
+                <h3 class="section-title">Performance por Campanha</h3>
+                <div class="table-container">
+                    <table id="campaignTable">
+                        <thead>
+                            <tr>
+                                <th>Campanha</th>
+                                <th>Leads</th>
+                                <th>Custo</th>
+                                <th>CPL</th>
+                                <th>Impressões</th>
+                                <th>Taxa Conv.</th>
+                            </tr>
+                        </thead>
+                        <tbody></tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Right Column -->
+            <div class="pie-charts">
+                <div class="pie-chart-container">
+                    <h3 class="section-title">Divisão por Origem</h3>
+                    <div class="pie-chart">
+                        <canvas id="sourceChart"></canvas>
+                    </div>
+                </div>
+                <div class="pie-chart-container">
+                    <h3 class="section-title">Leads por Plataforma</h3>
+                    <div class="pie-chart">
+                        <canvas id="platformChart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Bottom Tables (Agora 3 Colunas) -->
+        <div class="bottom-grid">
+            <div class="chart-section">
+                <h3 class="section-title">Melhores Roteiros (Pago)</h3>
+                <div class="table-container">
+                    <!-- Nova tabela para Melhores Roteiros -->
+                    <table id="bestScriptsTable">
+                        <thead>
+                            <tr>
+                                <th>Roteiro</th>
+                                <th>Leads Totais</th>
+                            </tr>
+                        </thead>
+                        <tbody></tbody>
+                    </table>
+                </div>
+            </div>
+            <div class="chart-section">
+                <h3 class="section-title">Análise de Tráfego Pago</h3>
+                <div class="table-container">
+                    <table id="paidAnalysisTable">
+                        <thead>
+                            <tr>
+                                <th>Origem</th>
+                                <th>Público</th>
+                                <th>Roteiro</th>
+                                <th>Leads</th>
+                            </tr>
+                        </thead>
+                        <tbody></tbody>
+                    </table>
+                </div>
+            </div>
+            <div class="chart-section">
+                <h3 class="section-title">Análise de Tráfego Orgânico</h3>
+                <div class="table-container">
+                    <table id="organicAnalysisTable">
+                        <thead>
+                            <tr>
+                                <th>Origem</th>
+                                <th>Conteúdo</th>
+                                <th>Leads</th>
+                            </tr>
+                        </thead>
+                        <tbody></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Data from JSON/YAML
+        const dashboardData = {
+            kpis: {
+                total_leads: 734,
+                total_cost: 929.68,
+                avg_cpl: 0.75, // Será recalculado no updateKPIs
+                avg_conv_rate: 81.43, // Alterado para 81.43
+                total_clicks_estimated: 740,
+                total_impressions: 174298,
+                total_reach: 93593,
+                frequency: 1.86,
+                paid_leads: 603,
+                organic_leads: 128
+            },
+            daily_metrics: [
+                { day: 22, paid_leads: 275, organic_leads: 78, total_leads: 353, cost: 206.25, cpl: 0.73 }, // CPL alterado
+                { day: 23, paid_leads: 283, organic_leads: 43, total_leads: 326, cost: 212.25, cpl: 0.77 }, // CPL alterado
+                { day: 24, paid_leads: 45, organic_leads: 7, total_leads: 52, cost: 33.75, cpl: 0.77 } // CPL alterado
+            ],
+            campaigns: [
+                { name: 'VideoView', leads: 337, cost: 582.72, cpl: 0.85, impressions: 106197, reach: 52777, ctr: 0.018, cpm: 5.49, conv_rate: 0.81 },
+                { name: 'Envolvimento', leads: 266, cost: 346.96, cpl: 0.64, impressions: 68101, reach: 40816, ctr: 0.021, cpm: 5.09, conv_rate: 0.83 }
+            ],
+            source_breakdown: [
+                { source: 'Instagram (Pago)', leads: 570, type: 'paid' },
+                { source: 'Facebook (Pago)', leads: 33, type: 'paid' },
+                { source: 'AcadRFA Instagram (Orgânico)', leads: 17, type: 'organic' },
+                { source: 'Rangel Instagram (Orgânico)', leads: 108, type: 'organic' },
+                { source: 'Rangel TikTok (Orgânico)', leads: 3, type: 'organic' }
+            ],
+            paid_analysis: [
+                { source: 'Instagram', publico: '0103 - VideoView 90d', roteiro: 'Roteiro 3', leads: 69 },
+                { source: 'Instagram', publico: '0105 - VideoView 90d', roteiro: 'Roteiro 5', leads: 155 },
+                { source: 'Instagram', publico: '0108 - VideoView 90d', roteiro: 'Roteiro 8', leads: 91 },
+                { source: 'Instagram', publico: '0113 - Envolvimento 90d', roteiro: 'Roteiro 13', leads: 74 },
+                { source: 'Instagram', publico: '0117 - Envolvimento 90d', roteiro: 'Roteiro 17', leads: 37 },
+                { source: 'Instagram', publico: '0102 - VideoView 90d', roteiro: 'Roteiro 2', leads: 72 },
+                { source: 'Facebook', publico: '0102 - VideoView 90d', roteiro: 'Roteiro 2', leads: 5 }
+            ],
+            organic_analysis: [
+                { source: 'AcadRFA Instagram', content: 'bio', leads: 4 },
+                { source: 'AcadRFA Instagram', content: 'stories', leads: 13 },
+                { source: 'Rangel Instagram', content: 'bio', leads: 6 },
+                { source: 'Rangel Instagram', content: 'linkme', 'leads': 6 },
+                { source: 'Rangel Instagram', content: 'stories', leads: 96 },
+                { source: 'Rangel TikTok', content: 'video', leads: 3 }
+            ]
+        };
+
+        // Current filters
+        let currentFilters = {
+            period: 'all',
+            type: 'all'
+        };
+
+        // Chart instances
+        let timeSeriesChart, sourceChart, platformChart;
+
+        // Initialize dashboard
+        document.addEventListener('DOMContentLoaded', function() {
+            initializeFilters();
+            updateDashboard();
+        });
+
+        function initializeFilters() {
+            // Period filter
+            document.getElementById('periodFilter').addEventListener('click', function(e) {
+                if (e.target.classList.contains('filter-btn')) {
+                    document.querySelectorAll('#periodFilter .filter-btn').forEach(btn => btn.classList.remove('active'));
+                    e.target.classList.add('active');
+                    currentFilters.period = e.target.dataset.period;
+                    updateDashboard();
+                }
+            });
+
+            // Type filter
+            document.getElementById('typeFilter').addEventListener('click', function(e) {
+                if (e.target.classList.contains('filter-btn')) {
+                    document.querySelectorAll('#typeFilter .filter-btn').forEach(btn => btn.classList.remove('active'));
+                    e.target.classList.add('active');
+                    currentFilters.type = e.target.dataset.type;
+                    updateDashboard();
+                }
+            });
+        }
+
+        function getFilteredData() {
+            const data = JSON.parse(JSON.stringify(dashboardData)); // Deep copy
+            
+            // Filter by period
+            if (currentFilters.period !== 'all') {
+                const day = parseInt(currentFilters.period);
+                data.daily_metrics = data.daily_metrics.filter(d => d.day === day);
+            }
+            
+            // Filter by type
+            if (currentFilters.type !== 'all') {
+                data.source_breakdown = data.source_breakdown.filter(s => s.type === currentFilters.type);
+            }
+
+            return data;
+        }
+
+        function updateDashboard() {
+            const filteredData = getFilteredData();
+            updateKPIs(filteredData);
+            updateTimeSeriesChart(filteredData);
+            updateSourceChart(filteredData);
+            updatePlatformChart(filteredData);
+            updateCampaignTable();
+            updateAnalysisTables(filteredData);
+            updateBestScriptsTable(); // Nova função
+        }
+
+        function updateKPIs(data) {
+            let kpis = {
+                totalLeads: 0,
+                totalCost: 0,
+                paidLeads: 0,
+                organicLeads: 0,
+                totalCPL: 0,
+                cplCount: 0
+            };
+
+            let totalLeadsForCPL = 0; // Leads Pagos usados para calcular CPL
+            let totalCostForCPL = 0; // Custo usado para calcular CPL
+
+            // Calculate from daily metrics
+            if (currentFilters.period !== 'all') {
+                data.daily_metrics.forEach(day => {
+                    if (currentFilters.type === 'all' || currentFilters.type === 'paid') {
+                        kpis.paidLeads += day.paid_leads;
+                        kpis.totalLeads += day.paid_leads;
+                    }
+                    if (currentFilters.type === 'all' || currentFilters.type === 'organic') {
+                        kpis.organicLeads += day.organic_leads;
+                        kpis.totalLeads += day.organic_leads;
+                    }
+                    
+                    // Cálculo do CPL: se for paid ou all, usamos o custo e leads pagos
+                    if (currentFilters.type !== 'organic') {
+                        kpis.totalCost += day.cost;
+                        totalLeadsForCPL += day.paid_leads;
+                        totalCostForCPL += day.cost;
+                        kpis.totalCPL += day.cpl;
+                        kpis.cplCount++;
+                    }
+                });
+            } else {
+                // Use full data / All period
+                kpis.totalLeads = dashboardData.kpis.total_leads;
+                kpis.totalCost = dashboardData.kpis.total_cost;
+                kpis.paidLeads = dashboardData.kpis.paid_leads;
+                kpis.organicLeads = dashboardData.kpis.organic_leads;
+
+                if (currentFilters.type === 'paid' || currentFilters.type === 'all') {
+                    totalLeadsForCPL = dashboardData.kpis.paid_leads;
+                    totalCostForCPL = dashboardData.kpis.total_cost;
+                } else if (currentFilters.type === 'organic') {
+                    totalLeadsForCPL = 0;
+                    totalCostForCPL = 0;
+                    kpis.totalCost = 0;
+                    kpis.totalLeads = dashboardData.kpis.organic_leads;
+                }
+            }
+            
+            // Recálculo do CPL Médio (usando a soma dos custos e leads se o período for 'all' ou o novo CPL para o dia filtrado)
+            let avgCPL;
+            if (currentFilters.period !== 'all') {
+                // Se for um dia específico, usamos o CPL desse dia
+                avgCPL = data.daily_metrics[0] ? data.daily_metrics[0].cpl : 0;
+            } else if (totalCostForCPL > 0 && totalLeadsForCPL > 0) {
+                 // Recalcular CPL Médio com base nos leads pagos e CPLs diários atualizados
+                const totalNewCost = dashboardData.daily_metrics.reduce((sum, d) => sum + (d.paid_leads * d.cpl), 0);
+                const totalLeadsCPL = dashboardData.daily_metrics.reduce((sum, d) => sum + d.paid_leads, 0);
+                
+                avgCPL = totalLeadsCPL > 0 ? totalNewCost / totalLeadsCPL : 0;
+            } else {
+                avgCPL = 0;
+            }
+
+
+            document.getElementById('totalLeads').textContent = kpis.totalLeads.toLocaleString();
+            document.getElementById('totalCost').textContent = `R$ ${kpis.totalCost.toFixed(2).replace('.', ',')}`;
+            document.getElementById('avgCPL').textContent = `R$ ${avgCPL.toFixed(2).replace('.', ',')}`;
+            document.getElementById('convRate').textContent = `${dashboardData.kpis.avg_conv_rate.toFixed(2).replace('.', ',')}%`;
+            document.getElementById('totalClicks').textContent = dashboardData.kpis.total_clicks_estimated.toLocaleString();
+            document.getElementById('totalImpressions').textContent = dashboardData.kpis.total_impressions.toLocaleString();
+            document.getElementById('totalReach').textContent = dashboardData.kpis.total_reach.toLocaleString();
+            document.getElementById('frequency').textContent = dashboardData.kpis.frequency.toString().replace('.', ',');
+        }
+
+        function updateTimeSeriesChart(data) {
+            const ctx = document.getElementById('timeSeriesChart').getContext('2d');
+            
+            if (timeSeriesChart) {
+                timeSeriesChart.destroy();
+            }
+
+            const labels = data.daily_metrics.map(d => `${d.day} Out`);
+            const leadsData = data.daily_metrics.map(d => {
+                if (currentFilters.type === 'paid') return d.paid_leads;
+                if (currentFilters.type === 'organic') return d.organic_leads;
+                return d.total_leads;
+            });
+            const costData = data.daily_metrics.map(d => d.cost);
+            const cplData = data.daily_metrics.map(d => d.cpl);
+
+            timeSeriesChart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: labels,
+                    datasets: [
+                        {
+                            label: 'Leads',
+                            data: leadsData,
+                            borderColor: '#1FB8CD',
+                            backgroundColor: '#1FB8CD',
+                            yAxisID: 'y',
+                            tension: 0.4,
+                            pointRadius: 5
+                        },
+                        {
+                            label: 'Custo (R$)',
+                            data: costData,
+                            borderColor: '#FFC185',
+                            backgroundColor: '#FFC185',
+                            yAxisID: 'y1',
+                            hidden: currentFilters.type === 'organic',
+                            tension: 0.4,
+                            pointRadius: 5
+                        },
+                        {
+                            label: 'CPL (R$)',
+                            data: cplData,
+                            borderColor: '#B4413C',
+                            backgroundColor: '#B4413C',
+                            yAxisID: 'y2',
+                            hidden: currentFilters.type === 'organic',
+                            tension: 0.4,
+                            pointRadius: 5
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            labels: {
+                                color: '#f5f5f5'
+                            }
+                        }
+                    },
+                    scales: {
+                        y: {
+                            type: 'linear',
+                            display: true,
+                            position: 'left',
+                            title: {
+                                display: true,
+                                text: 'Leads',
+                                color: '#f5f5f5'
+                            },
+                            grid: { color: 'rgba(255,255,255,0.1)' },
+                            ticks: { color: '#f5f5f5' }
+                        },
+                        y1: {
+                            type: 'linear',
+                            display: true,
+                            position: 'right',
+                            title: {
+                                display: true,
+                                text: 'Custo (R$)',
+                                color: '#FFC185'
+                            },
+                            grid: { drawOnChartArea: false },
+                            ticks: { color: '#f5f5f5' }
+                        },
+                        y2: {
+                            type: 'linear',
+                            display: true,
+                            position: 'right',
+                            title: {
+                                display: true,
+                                text: 'CPL (R$)',
+                                color: '#B4413C'
+                            },
+                            grid: { drawOnChartArea: false },
+                            ticks: { color: '#f5f5f5' },
+                            // Ajuste para empilhar no lado direito junto com y1
+                            offset: true
+                        },
+                        x: {
+                            grid: { color: 'rgba(255,255,255,0.1)' },
+                            ticks: { color: '#f5f5f5' }
+                        }
+                    }
+                }
+            });
+        }
+
+        function updateSourceChart(data) {
+            const ctx = document.getElementById('sourceChart').getContext('2d');
+            
+            if (sourceChart) {
+                sourceChart.destroy();
+            }
+
+            const sourceData = {};
+            data.source_breakdown.forEach(item => {
+                const sourceName = item.source.replace(' (Pago)', '').replace(' (Orgânico)', '');
+                sourceData[sourceName] = (sourceData[sourceName] || 0) + item.leads;
+            });
+
+            const labels = Object.keys(sourceData);
+            const values = Object.values(sourceData);
+            const colors = ['#1FB8CD', '#FFC185', '#B4413C', '#ECEBD5', '#5D878F'];
+
+            sourceChart = new Chart(ctx, {
+                type: 'pie',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        data: values,
+                        backgroundColor: colors.slice(0, labels.length)
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'bottom',
+                            labels: {
+                                color: '#f5f5f5',
+                                padding: 10
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        function updatePlatformChart(data) {
+            const ctx = document.getElementById('platformChart').getContext('2d');
+            
+            if (platformChart) {
+                platformChart.destroy();
+            }
+
+            const platformData = {};
+            data.source_breakdown.forEach(item => {
+                let platform;
+                if (item.source.includes('Instagram')) platform = 'Instagram';
+                else if (item.source.includes('Facebook')) platform = 'Facebook';
+                else if (item.source.includes('TikTok')) platform = 'TikTok';
+                else platform = 'Outros';
+                
+                platformData[platform] = (platformData[platform] || 0) + item.leads;
+            });
+
+            const labels = Object.keys(platformData);
+            const values = Object.values(platformData);
+            const colors = ['#1FB8CD', '#FFC185', '#B4413C', '#ECEBD5'];
+
+            platformChart = new Chart(ctx, {
+                type: 'pie',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        data: values,
+                        backgroundColor: colors.slice(0, labels.length)
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'bottom',
+                            labels: {
+                                color: '#f5f5f5',
+                                padding: 10
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        function updateCampaignTable() {
+            const tbody = document.querySelector('#campaignTable tbody');
+            tbody.innerHTML = '';
+
+            dashboardData.campaigns.forEach(campaign => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${campaign.name}</td>
+                    <td>${campaign.leads}</td>
+                    <td>R$ ${campaign.cost.toFixed(2).replace('.', ',')}</td>
+                    <td>R$ ${campaign.cpl.toFixed(2).replace('.', ',')}</td>
+                    <td>${campaign.impressions.toLocaleString()}</td>
+                    <td>${(campaign.conv_rate * 100).toFixed(2).replace('.', ',')}%</td>
+                `;
+                tbody.appendChild(row);
+            });
+        }
+        
+        // Nova função para a tabela de Melhores Roteiros
+        function updateBestScriptsTable() {
+            const tbody = document.querySelector('#bestScriptsTable tbody');
+            tbody.innerHTML = '';
+
+            const roteiros = {};
+            dashboardData.paid_analysis.forEach(item => {
+                roteiros[item.roteiro] = (roteiros[item.roteiro] || 0) + item.leads;
+            });
+
+            const sortedRoteiros = Object.entries(roteiros)
+                .map(([roteiro, leads]) => ({ roteiro, leads }))
+                .sort((a, b) => b.leads - a.leads); // Ordena por leads em ordem decrescente
+
+            sortedRoteiros.forEach(item => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${item.roteiro}</td>
+                    <td>${item.leads}</td>
+                `;
+                tbody.appendChild(row);
+            });
+        }
+
+        function updateAnalysisTables(data) {
+            // Paid analysis table
+            const paidTbody = document.querySelector('#paidAnalysisTable tbody');
+            paidTbody.innerHTML = '';
+
+            if (currentFilters.type === 'all' || currentFilters.type === 'paid') {
+                dashboardData.paid_analysis.forEach(item => {
+                    const row = document.createElement('tr');
+                    row.innerHTML = `
+                        <td>${item.source}</td>
+                        <td>${item.publico}</td>
+                        <td>${item.roteiro}</td>
+                        <td>${item.leads}</td>
+                    `;
+                    paidTbody.appendChild(row);
+                });
+            }
+
+            // Organic analysis table
+            const organicTbody = document.querySelector('#organicAnalysisTable tbody');
+            organicTbody.innerHTML = '';
+
+            if (currentFilters.type === 'all' || currentFilters.type === 'organic') {
+                dashboardData.organic_analysis.forEach(item => {
+                    const row = document.createElement('tr');
+                    row.innerHTML = `
+                        <td>${item.source}</td>
+                        <td>${item.content}</td>
+                        <td>${item.leads}</td>
+                    `;
+                    organicTbody.appendChild(row);
+                });
+            }
+        }
+    </script>
+</body>
+</html>
